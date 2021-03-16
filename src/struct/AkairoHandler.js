@@ -174,11 +174,11 @@ class AkairoHandler extends EventEmitter {
    * Defaults to the filter passed in the constructor.
    * @returns {AkairoHandler}
    */
-  loadAll(directory = this.directory, filter = this.loadFilter || (() => true)) {
+  async loadAll(directory = this.directory, filter = this.loadFilter || (() => true)) {
     const filepaths = this.constructor.readdirRecursive(directory);
     for (let filepath of filepaths) {
       filepath = path.resolve(filepath);
-      if (filter(filepath)) {
+      if (await filter(filepath)) {
         this.load(filepath);
       }
     }

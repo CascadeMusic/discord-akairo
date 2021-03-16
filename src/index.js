@@ -13,7 +13,8 @@ module.exports = {
 
     // Arguments
     Argument: require('./struct/commands/arguments/Argument'),
-    TypeResolver: require('./struct/commands/arguments/TypeResolver'),
+    ArgumentRunner: require('./struct/commands/arguments/ArgumentRunner'),
+    Types: require('./struct/commands/arguments/Types'),
 
     // Inhibitors
     Inhibitor: require('./struct/inhibitors/Inhibitor'),
@@ -22,12 +23,6 @@ module.exports = {
     // Listeners
     Listener: require('./struct/listeners/Listener'),
     ListenerHandler: require('./struct/listeners/ListenerHandler'),
-
-    // Providers
-    Provider: require('./providers/Provider'),
-    SequelizeProvider: require('./providers/SequelizeProvider'),
-    SQLiteProvider: require('./providers/SQLiteProvider'),
-    MongooseProvider: require('./providers/MongooseProvider'),
 
     // Utilities
     AkairoError: require('./util/AkairoError'),

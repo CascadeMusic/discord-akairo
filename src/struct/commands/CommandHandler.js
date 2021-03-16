@@ -1,7 +1,7 @@
 const { Collection } = require("@cascade-music/discord.js");
 
 const { BuiltInReasons, CommandHandlerEvents } = require("../../util/Constants");
-const { deepAssign, flatMap, intoArray, intoCallable, isPromise, prefixCompare } = require("../../util/Util");
+const { deepAssign, intoArray, intoCallable, isPromise, prefixCompare } = require("../../util/Util");
 const AkairoError = require("../../util/AkairoError");
 
 const AkairoHandler = require("../AkairoHandler");
@@ -9,7 +9,6 @@ const Command = require("./Command");
 const CommandUtil = require("./CommandUtil");
 
 const Flag = require("./Flag");
-const TypeResolver = require("./arguments/TypeResolver");
 
 /**
  * Loads commands and handles messages.
@@ -53,13 +52,7 @@ class CommandHandler extends AkairoHandler {
     });
 
     /**
-     * The type resolver.
-     * @type {TypeResolver}
-     */
-    this.resolver = new TypeResolver(this);
-
-    /**
-     * Collecion of command aliases.
+     * Collection of command aliases.
      * @type {Collection<string, string>}
      */
     this.aliases = new Collection();
@@ -456,9 +449,11 @@ class CommandHandler extends AkairoHandler {
         if (command.lock) {
           key = command.lock(message, args);
         }
+
         if (isPromise(key)) {
           key = await key;
         }
+
         if (key) {
           if (command.locker.has(key)) {
             key = null;
@@ -501,8 +496,12 @@ class CommandHandler extends AkairoHandler {
     const hasRegexCommands = [];
     for (const command of this.modules.values()) {
       if (message.edited ? command.editable : true) {
-        const regex = typeof command.regex === "function" ? command.regex(message) : command.regex;
+        let regex = typeof command.regex === "function" ? command.regex(message) : command.regex;
         if (regex) {
+          if (isPromise(regex)) {
+            regex = await regex;
+          }
+
           hasRegexCommands.push({ command, regex });
         }
       }
@@ -572,6 +571,7 @@ class CommandHandler extends AkairoHandler {
         if (isPromise(cond)) {
           cond = await cond;
         }
+
         if (cond) {
           trueCommands.push(command);
         }
@@ -688,7 +688,7 @@ class CommandHandler extends AkairoHandler {
       return true;
     }
 
-    if (this.runCooldowns(message, command)) {
+    if (await this.runCooldowns(message, command)) {
       return true;
     }
 
@@ -724,11 +724,16 @@ class CommandHandler extends AkairoHandler {
 
     if (command.userPermissions) {
       const ignorer = command.ignorePermissions || this.ignorePermissions;
-      const isIgnored = Array.isArray(ignorer)
+
+      let isIgnored = Array.isArray(ignorer)
         ? ignorer.includes(message.author.id)
         : typeof ignorer === "function"
           ? ignorer(message, command)
           : message.author.id === ignorer;
+
+      if (isPromise(isIgnored)) {
+        isIgnored = await isIgnored;
+      }
 
       if (!isIgnored) {
         if (typeof command.userPermissions === "function") {
@@ -758,15 +763,19 @@ class CommandHandler extends AkairoHandler {
    * Runs cooldowns and checks if a user is under cooldown.
    * @param {Message} message - Message that called the command.
    * @param {Command} command - Command to cooldown.
-   * @returns {boolean}
+   * @returns {Promise<boolean>}
    */
-  runCooldowns(message, command) {
+  async runCooldowns(message, command) {
     const ignorer = command.ignoreCooldown || this.ignoreCooldown;
-    const isIgnored = Array.isArray(ignorer)
+    let isIgnored = Array.isArray(ignorer)
       ? ignorer.includes(message.author.id)
       : typeof ignorer === "function"
         ? ignorer(message, command)
         : message.author.id === ignorer;
+
+    if (isPromise(isIgnored)) {
+      isIgnored = await isIgnored;
+    }
 
     if (isIgnored) {
       return false;
@@ -871,7 +880,7 @@ class CommandHandler extends AkairoHandler {
       return prefixes.map(p => [ p, cmds ]);
     });
 
-    const pairs = flatMap(await Promise.all(promises), x => x);
+    const pairs = (await Promise.all(promises)).flat();
     pairs.sort(([ a ], [ b ]) => prefixCompare(a, b));
     return this.parseMultiplePrefixes(message, pairs);
   }
@@ -1038,18 +1047,6 @@ class CommandHandler extends AkairoHandler {
    */
   useInhibitorHandler(inhibitorHandler) {
     this.inhibitorHandler = inhibitorHandler;
-    this.resolver.inhibitorHandler = inhibitorHandler;
-
-    return this;
-  }
-
-  /**
-   * Set the listener handler to use.
-   * @param {ListenerHandler} listenerHandler - The listener handler.
-   * @returns {CommandHandler}
-   */
-  useListenerHandler(listenerHandler) {
-    this.resolver.listenerHandler = listenerHandler;
 
     return this;
   }

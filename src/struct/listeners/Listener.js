@@ -1,5 +1,5 @@
-const AkairoError = require('../../util/AkairoError');
-const AkairoModule = require('../AkairoModule');
+const AkairoError = require("../../util/AkairoError");
+const AkairoModule = require("../AkairoModule");
 
 /**
  * Represents a listener.
@@ -8,68 +8,68 @@ const AkairoModule = require('../AkairoModule');
  * @extends {AkairoModule}
  */
 class Listener extends AkairoModule {
-    constructor(id, {
-        category,
-        emitter,
-        event,
-        type = 'on'
-    } = {}) {
-        super(id, { category });
-
-        /**
-         * The event emitter.
-         * @type {string|EventEmitter}
-         */
-        this.emitter = emitter;
-
-        /**
-         * The event name listened to.
-         * @type {string}
-         */
-        this.event = event;
-
-        /**
-         * Type of listener.
-         * @type {string}
-         */
-        this.type = type;
-
-        /**
-         * The ID of this listener.
-         * @name Listener#id
-         * @type {string}
-         */
-
-        /**
-         * The listener handler.
-         * @name Listener#handler
-         * @type {ListenerHandler}
-         */
-    }
+  constructor(id, {
+    category,
+    emitter = "client",
+    event,
+    type = "on"
+  } = {}) {
+    super(id, { category });
 
     /**
-     * Executes the listener.
-     * @abstract
-     * @param {...args} [args] - Arguments.
-     * @returns {any}
+     * The event emitter.
+     * @type {string|EventEmitter}
      */
-    exec() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'exec');
-    }
+    this.emitter = emitter;
 
     /**
-     * Reloads the listener.
-     * @method
-     * @name Listener#reload
-     * @returns {Listener}
+     * The event name listened to.
+     * @type {string}
+     */
+    this.event = event;
+
+    /**
+     * Type of listener.
+     * @type {string}
+     */
+    this.type = type;
+
+    /**
+     * The ID of this listener.
+     * @name Listener#id
+     * @type {string}
      */
 
     /**
-     * Removes the listener.
-     * @method
-     * @name Listener#remove
-     * @returns {Listener}
+     * The listener handler.
+     * @name Listener#handler
+     * @type {ListenerHandler}
      */
+  }
+
+  /**
+   * Executes the listener.
+   * @abstract
+   * @param {...args} [args] - Arguments.
+   * @returns {any}
+   */
+  exec() {
+    throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
+  }
+
+  /**
+   * Reloads the listener.
+   * @method
+   * @name Listener#reload
+   * @returns {Listener}
+   */
+
+  /**
+   * Removes the listener.
+   * @method
+   * @name Listener#remove
+   * @returns {Listener}
+   */
 }
 
 module.exports = Listener;
@@ -80,5 +80,5 @@ module.exports = Listener;
  * @typedef {AkairoModuleOptions} ListenerOptions
  * @prop {string|EventEmitter} emitter - The event emitter, either a key from `ListenerHandler#emitters` or an EventEmitter.
  * @prop {string} event - Event name to listen to.
- * @prop {string} [type='on'] - Type of listener, either 'on' or 'once'.
+ * @prop {string} [type="on"] - Type of listener, either "on" or "once".
  */

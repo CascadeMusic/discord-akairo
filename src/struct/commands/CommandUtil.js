@@ -1,4 +1,4 @@
-const { APIMessage, Collection } = require('discord.js');
+const { APIMessage, Collection } = require('@cascade-music/discord.js');
 
 /**
  * Command utilities.

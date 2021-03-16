@@ -1,4 +1,4 @@
-const { Collection } = require('discord.js');
+const { Collection } = require('@cascade-music/discord.js');
 
 /**
  * A group of modules.

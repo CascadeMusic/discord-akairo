@@ -1,5 +1,5 @@
 const { ArgumentTypes } = require('../../../util/Constants');
-const { Collection } = require('discord.js');
+const { Collection } = require('@cascade-music/discord.js');
 const { URL } = require('url');
 
 /**

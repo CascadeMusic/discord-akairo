@@ -1,4 +1,4 @@
-const { Client } = require('discord.js');
+const { Client } = require('@cascade-music/discord.js');
 const ClientUtil = require('./ClientUtil');
 
 /**
@@ -9,35 +9,35 @@ const ClientUtil = require('./ClientUtil');
  * If not specified, the previous options parameter is used instead.
  */
 class AkairoClient extends Client {
-    constructor(options = {}, clientOptions) {
-        super(clientOptions || options);
+  constructor(options = {}, clientOptions) {
+    super(clientOptions || options);
 
-        const { ownerID = '' } = options;
-
-        /**
-         * The ID of the owner(s).
-         * @type {Snowflake|Snowflake[]}
-         */
-        this.ownerID = ownerID;
-
-        /**
-         * Utility methods.
-         * @type {ClientUtil}
-         */
-        this.util = new ClientUtil(this);
-    }
+    const { ownerID = '' } = options;
 
     /**
-     * Checks if a user is the owner of this bot.
-     * @param {UserResolvable} user - User to check.
-     * @returns {boolean}
+     * The ID of the owner(s).
+     * @type {Snowflake|Snowflake[]}
      */
-    isOwner(user) {
-        const id = this.users.resolveID(user);
-        return Array.isArray(this.ownerID)
-            ? this.ownerID.includes(id)
-            : id === this.ownerID;
-    }
+    this.ownerID = ownerID;
+
+    /**
+     * Utility methods.
+     * @type {ClientUtil}
+     */
+    this.util = new ClientUtil(this);
+  }
+
+  /**
+   * Checks if a user is the owner of this bot.
+   * @param {UserResolvable} user - User to check.
+   * @returns {boolean}
+   */
+  isOwner(user) {
+    const id = this.users.resolveID(user);
+    return Array.isArray(this.ownerID)
+      ? this.ownerID.includes(id)
+      : id === this.ownerID;
+  }
 }
 
 module.exports = AkairoClient;
